@@ -1,17 +1,29 @@
 import Link from "next/link";
 import EpisodeClient from "./EpisodeClient";
 import AnimeList from "@/components/AnimeList";
+import { notFound } from "next/navigation";
 
 const DetailAnime = async ({ params }) => {
   const { slug } = await params;
 
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/anime/anime/${slug}`,
-    { cache: "no-store" },
-  );
+  const baseUrl = process.env.API_BASE_URL; // ✅ Fix: server-only env var
+
+  if (!baseUrl) {
+    throw new Error("API_BASE_URL belum di-set");
+  }
+
+  const response = await fetch(`${baseUrl}/anime/anime/${slug}`, {
+    cache: "no-store",
+  });
+
+  if (response.status === 404) notFound();
 
   if (!response.ok) {
-    return <h1 className="text-white">Anime tidak ditemukan</h1>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <h1 className="text-white">Anime tidak ditemukan</h1>
+      </div>
+    );
   }
 
   const result = await response.json();
@@ -29,7 +41,7 @@ const DetailAnime = async ({ params }) => {
 
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
 
-        <div className="relative z-10 flex flex-col justify-end h-full px-6 md:px-16 pb-10">
+        <div className="relative flex flex-col justify-end h-full px-6 md:px-16 pb-10">
           <h1 className="text-4xl md:text-6xl font-bold">{anime.title}</h1>
 
           <p className="text-gray-300 mt-2">{anime.japanese}</p>
@@ -82,7 +94,7 @@ const DetailAnime = async ({ params }) => {
           )}
         </div>
 
-        {/* EPISODE SECTION (CLIENT COMPONENT) */}
+        {/* EPISODE SECTION */}
         <h2 id="episodes" className="mt-10 text-xl font-bold">
           Episodes
         </h2>

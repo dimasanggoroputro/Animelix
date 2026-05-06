@@ -106,11 +106,11 @@ export default function SearchBar() {
         <div className="fixed inset-0 z-[999] flex items-start justify-center bg-black/80 backdrop-blur-md">
           {" "}
           {/* close */}
-          <button onClick={reset} className="absolute top-6 right-6 text-white">
+          <button onClick={reset} className="absolute top-6 right-11 text-white">
             <X size={28} />
           </button>
           {/* box */}
-          <div className="mt-32 w-full max-w-xl px-4">
+          <div className="mt-35 w-full max-w-xl px-4">
             <div className="bg-black/70 border border-white/20 rounded-2xl overflow-hidden shadow-xl">
               {/* input */}
               <div className="flex items-center px-4 py-3 border-b border-white/10">

@@ -7,6 +7,7 @@ const EpisodeClient = ({ initialData }) => {
   const [data, setData] = useState(initialData);
   const [streamUrl, setStreamUrl] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (data?.defaultStreamingUrl) {
@@ -17,10 +18,14 @@ const EpisodeClient = ({ initialData }) => {
   const changeServer = async (serverId) => {
     try {
       setLoading(true);
+      setError(null);
 
-      const res = await fetch(
-        `https://www.sankavollerei.com/anime/server/${serverId}`,
-      );
+      // ✅ Pakai API route sendiri, bukan hardcode external URL di client
+      const res = await fetch(`/api/server/${serverId}`);
+
+      if (!res.ok) {
+        throw new Error(`Server response: ${res.status}`);
+      }
 
       const result = await res.json();
       const url = result?.data?.embedUrl || result?.data?.url;
@@ -28,16 +33,17 @@ const EpisodeClient = ({ initialData }) => {
       if (url) {
         setStreamUrl(url);
       } else {
-        alert("Server tidak tersedia 😢");
+        setError("Server tidak tersedia 😢");
       }
     } catch (err) {
-      alert("Gagal load server 😢");
+      console.error("[changeServer] error:", err.message);
+      setError("Gagal load server 😢");
     } finally {
       setLoading(false);
     }
   };
 
-  if (!data) return <div className="text-white">Loading...</div>;
+  if (!data) return <div className="text-white p-6">Data tidak ditemukan.</div>;
 
   return (
     <div className="bg-black text-white min-h-screen pt-20">
@@ -45,7 +51,7 @@ const EpisodeClient = ({ initialData }) => {
       <div className="px-6 md:px-16 pt-6">
         <Link
           href="/"
-          className="text-gray-400 hover:text-white transition bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded "
+          className="text-gray-400 hover:text-white transition bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded"
         >
           ← Back
         </Link>
@@ -57,13 +63,25 @@ const EpisodeClient = ({ initialData }) => {
       <div className="px-6 md:px-16 mt-6">
         <div className="relative w-full aspect-video bg-black rounded-lg overflow-hidden shadow-2xl">
           {loading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black">
-              <p className="text-gray-400">Loading server...</p>
+            <div className="absolute inset-0 flex items-center justify-center bg-black/80">
+              <p className="text-gray-400">Memuat server...</p>
             </div>
           )}
 
-          {!loading && streamUrl && (
-            <iframe src={streamUrl} className="w-full h-full" allowFullScreen />
+          {error && !loading && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/80">
+              <p className="text-red-400">{error}</p>
+            </div>
+          )}
+
+          {!loading && !error && streamUrl && (
+            <iframe
+              src={streamUrl}
+              className="w-full h-full"
+              allowFullScreen
+              // Security: batasi apa yang boleh dilakukan iframe
+              sandbox="allow-scripts allow-same-origin allow-forms allow-presentation"
+            />
           )}
         </div>
       </div>
@@ -93,7 +111,7 @@ const EpisodeClient = ({ initialData }) => {
         )}
       </div>
 
-      {/* SERVER SECTION (NETFLIX STYLE CHIPS) */}
+      {/* SERVER LIST */}
       <div className="px-6 md:px-16 mt-10 pb-10">
         <h2 className="text-lg font-semibold mb-4 text-gray-300">
           Choose Server
@@ -108,7 +126,8 @@ const EpisodeClient = ({ initialData }) => {
                 <button
                   key={idx}
                   onClick={() => changeServer(s.serverId)}
-                  className="px-4 py-1 rounded-full bg-gray-800 hover:bg-red-600 transition text-sm"
+                  disabled={loading}
+                  className="px-4 py-1 rounded-full bg-gray-800 hover:bg-red-600 disabled:opacity-50 transition text-sm"
                 >
                   {s.title}
                 </button>
