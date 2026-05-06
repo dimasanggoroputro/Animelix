@@ -15,8 +15,8 @@ export const metadata = {
 };
 
 const Home = async ({ searchParams }) => {
-  const page = Math.max(1, Number(searchParams?.page) || 1);
-
+  const params = await searchParams;
+  const page = Math.max(1, Number(params?.page) || 1);
   let result = null;
   let errorType = null; // "not_found" | "server_error"
 
@@ -45,7 +45,7 @@ const Home = async ({ searchParams }) => {
   return (
     <div className="bg-black text-white min-h-screen">
       {/* HERO */}
-      <section className="relative h-[80vh] flex items-end px-6 md:px-12 pb-10">
+      <section className="relative h-[60vh] md:h-[80vh] flex items-end px-6 md:px-12 ">
         <div className="absolute inset-0 bg-[url('/hero.jpg')] bg-cover bg-center" />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
 

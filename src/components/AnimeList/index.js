@@ -72,15 +72,15 @@ const AnimeList = ({ variant = "grid" }) => {
         <img
           src={anime.poster || anime.thumbnail}
           alt={anime.title}
-          className="w-full h-[240px] object-cover transition-transform duration-300 group-hover/card:scale-110"
+          className="w-full h-[240px] object-cover transition-transform duration-300 group-hover/card:scale-102"
         />
 
-        <div className="absolute inset-0 bg-black/0 group-hover/card:bg-black/60 transition" />
+        <div className="absolute inset-0 bg-black/0 group-hover/card:bg-black/60 group-hover/card:backdrop-blur-[2px] transition" />
 
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition">
-          <div className="bg-white/20 backdrop-blur-md px-3 py-2 rounded-full text-white text-sm">
-            <Search size={16} className="inline-block mr-1" />
-            Play
+          <div className="flex items-center justify-center gap-2 bg-white/20 backdrop-blur-md px-3 py-2 rounded-full text-white text-sm">
+            <Search size={16} />
+            Detail
           </div>
         </div>
       </div>
