@@ -22,7 +22,7 @@ const AnimeList = ({ variant = "grid" }) => {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/anime?page=${pageNumber}`
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/anime?page=${pageNumber}`,
       );
 
       const data = await res.json();
@@ -98,8 +98,9 @@ const AnimeList = ({ variant = "grid" }) => {
               : "No info"}
         </p>
 
-        <p>
-          
+        <p className="text-xs text-gray-400">
+          {(anime.releaseDay || anime.latestReleaseDate) &&
+            `Release: ${anime.releaseDay ?? ""} ${anime.latestReleaseDate ?? ""}`}
         </p>
 
         {anime.score && (
@@ -158,7 +159,7 @@ const AnimeList = ({ variant = "grid" }) => {
 
   // ================= GRID =================
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-4">
+    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-3 mt-4">
       {animeList.map((anime, i) => (
         <Card key={i} anime={anime} />
       ))}

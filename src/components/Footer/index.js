@@ -12,24 +12,22 @@ const Footer = () => {
       </Link>
 
       {/* MENU SIMPLE */}
-      <div className="flex flex-wrap gap-4 text-sm mb-4">
+      <div className="flex flex-wrap gap-4 text-sm my-5">
         <Link href="/" className="hover:text-white">
           Home
         </Link>
-        <Link href="#" className="hover:text-white">
-          Anime
-        </Link>
-        <Link href="#" className="hover:text-white">
+
+        <Link href="/genre" className="hover:text-white">
           Genre
         </Link>
-        <Link href="#" className="hover:text-white">
-          About
+        <Link href="/schedule" className="hover:text-white">
+          Jadwal
         </Link>
       </div>
 
       {/* COPYRIGHT */}
-      <p className="text-xs text-gray-500">
-        © {new Date().getFullYear()} AnimeKu. All rights reserved.
+      <p className="text-xs text-gray-500 text-center">
+        © {new Date().getFullYear()} ANIMELIX. All rights reserved.
       </p>
     </footer>
   );

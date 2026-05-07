@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Search } from "lucide-react";
 
 const SearchResultList = ({ animeList = [] }) => {
   function limitText(text, max) {
@@ -6,42 +7,55 @@ const SearchResultList = ({ animeList = [] }) => {
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 mt-6">
+    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4">
       {animeList.map((anime, index) => (
         <Link
           key={index}
           href={`/anime/${anime.animeId || anime.slug}`}
-          className="group bg-zinc-900 rounded-md overflow-hidden hover:scale-[1.03] transition"
+          className="group/card flex flex-col gap-2"
         >
-          {/* IMAGE */}
-          <div className="relative">
+          {/* POSTER */}
+          <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-zinc-800">
             <img
               src={anime.poster || anime.thumbnail}
               alt={anime.title}
-              className="w-full h-[300px] object-cover"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover/card:scale-105"
+              loading="lazy"
             />
 
-            {/* overlay hover */}
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition" />
+            {/* SCORE */}
+            {anime.score && (
+              <div className="absolute top-2 left-2 bg-black/70 text-yellow-400 text-xs font-bold px-2 py-0.5 rounded">
+                ★ {anime.score}
+              </div>
+            )}
+
+            {/* OVERLAY HOVER (FIXED) */}
+            <div className="absolute inset-0 bg-black/0 group-hover/card:bg-black/60 transition-all duration-300 flex flex-col items-center justify-center gap-2 opacity-0 group-hover/card:opacity-100">
+              <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-2 rounded-full text-white text-xs">
+                <Search size={14} />
+                Detail
+              </div>
+
+              {anime.episodes && (
+                <span className="text-gray-300 text-xs">
+                  {anime.episodes} eps
+                </span>
+              )}
+            </div>
           </div>
 
           {/* INFO */}
-          <div className="p-2">
-            <h2 className="text-sm font-bold text-white">
-              {limitText(anime.title, 18)}
-            </h2>
-
-            <p className="text-xs text-gray-400">
-              {anime.episodes
-                ? `Episode: ${anime.episodes}`
-                : anime.status
-                  ? anime.status
-                  : "No info"}
+          <div>
+            <p className="text-xs text-gray-300 leading-tight line-clamp-2 group-hover:text-white transition-colors">
+              {limitText(anime.title, 40)}
             </p>
 
-            {anime.score && (
-              <p className="text-yellow-400 text-xs mt-1">⭐ {anime.score}</p>
-            )}
+            <p className="text-xs text-gray-500 mt-0.5">
+              {anime.episodes
+                ? `${anime.episodes} eps`
+                : anime.status || "No info"}
+            </p>
           </div>
         </Link>
       ))}
