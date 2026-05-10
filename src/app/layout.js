@@ -17,6 +17,10 @@ export const metadata = {
   title: "Animeku",
   description:
     "Aplikasi streaming anime gratis dengan koleksi lengkap dan pembaruan rutin.",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({ children }) {
