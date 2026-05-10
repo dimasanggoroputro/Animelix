@@ -1,24 +1,39 @@
 /**
  * app/page.js
- *
- * Server Component — fetch data langsung via lib/getAnime.js,
- * tanpa self-fetch ke /api/anime (anti-pattern di App Router).
  */
 
+import HeroSlider from "@/components/HeroSlider";
 import AnimeList from "@/components/AnimeList";
 import { getAnime } from "@/lib/getAnime";
 
-// Metadata untuk SEO
 export const metadata = {
   title: "Anime Terbaru — Tayang Sekarang",
   description: "Temukan anime terbaru, trending, dan paling populer saat ini.",
 };
 
+async function getAnimeDetail(slug) {
+  const baseUrl = process.env.API_BASE_URL;
+  const res = await fetch(`${baseUrl}/anime/anime/${slug}`, {
+    next: { revalidate: 3600 },
+  });
+  if (!res.ok) return null;
+  const json = await res.json();
+  if (!json.data) return null;
+  // ✅ inject slug sebagai animeId karena detail API tidak return animeId
+  return { ...json.data, animeId: slug };
+}
+
+function pickRandom(arr, n) {
+  const shuffled = [...arr].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, n);
+}
+
 const Home = async ({ searchParams }) => {
   const params = await searchParams;
   const page = Math.max(1, Number(params?.page) || 1);
+
   let result = null;
-  let errorType = null; // "not_found" | "server_error"
+  let errorType = null;
 
   try {
     result = await getAnime({ page });
@@ -27,7 +42,6 @@ const Home = async ({ searchParams }) => {
     errorType = error.status === 404 ? "not_found" : "server_error";
   }
 
-  // --- Error States ---
   if (errorType) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black">
@@ -42,25 +56,18 @@ const Home = async ({ searchParams }) => {
 
   const animeList = result?.data?.animeList || [];
 
+  const heroSlugs = pickRandom(animeList, 5).map((a) => a.animeId);
+  const heroDetails = await Promise.all(
+    heroSlugs.map((slug) => getAnimeDetail(slug))
+  );
+  const slides = heroDetails.filter(Boolean);
+
   return (
     <div className="bg-black text-white min-h-screen">
-      {/* HERO */}
-      <section className="relative h-[60vh] md:h-[80vh] flex items-end px-6 md:px-12 ">
-        <div className="absolute inset-0 bg-[url('/hero.jpg')] bg-cover bg-center" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+      <HeroSlider slides={slides} />
 
-        <div className="relative z-10 max-w-xl">
-          <h1 className="text-4xl md:text-5xl font-bold">Tayang Sekarang</h1>
-          <p className="text-gray-300 mt-3 text-sm">
-            Temukan anime terbaru, trending, dan paling populer saat ini.
-          </p>
-        </div>
-      </section>
-
-      {/* CONTENT */}
       <section className="px-6 md:px-12 py-10">
         <h2 className="text-lg font-semibold mb-4">Episode Terbaru</h2>
-
         {animeList.length === 0 ? (
           <p className="text-gray-400">Belum ada anime tersedia.</p>
         ) : (
