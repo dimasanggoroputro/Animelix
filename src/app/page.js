@@ -3,12 +3,14 @@
  */
 
 import HeroSlider from "@/components/HeroSlider";
-import AnimeList from "@/components/AnimeList";
-import { getAnime } from "@/lib/getAnime";
+import AnimeRow from "@/components/AnimeRow";
+import TodaySchedule from "@/components/TodaySchedule";
+import { getHome } from "@/lib/getHome";
+import { getSchedule } from "@/lib/getSchedule";
 
 export const metadata = {
-  title: "Anime Terbaru — Tayang Sekarang",
-  description: "Temukan anime terbaru, trending, dan paling populer saat ini.",
+  title: "Anime Sub Indo — Terbaru & Terlengkap",
+  description: "Nonton anime sub indo terbaru, ongoing, dan lengkap.",
 };
 
 async function getAnimeDetail(slug) {
@@ -19,44 +21,28 @@ async function getAnimeDetail(slug) {
   if (!res.ok) return null;
   const json = await res.json();
   if (!json.data) return null;
-  // ✅ inject slug sebagai animeId karena detail API tidak return animeId
   return { ...json.data, animeId: slug };
 }
 
 function pickRandom(arr, n) {
-  const shuffled = [...arr].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, n);
+  return [...arr].sort(() => Math.random() - 0.5).slice(0, n);
 }
 
-const Home = async ({ searchParams }) => {
-  const params = await searchParams;
-  const page = Math.max(1, Number(params?.page) || 1);
+const Home = async () => {
+  // Fetch semua data parallel
+  const [homeData, schedule] = await Promise.allSettled([
+    getHome(),
+    getSchedule(),
+  ]);
 
-  let result = null;
-  let errorType = null;
+  const home = homeData.status === "fulfilled" ? homeData.value : {};
+  const scheduleData = schedule.status === "fulfilled" ? schedule.value : [];
 
-  try {
-    result = await getAnime({ page });
-  } catch (error) {
-    console.error("[page.js] getAnime error:", error.message);
-    errorType = error.status === 404 ? "not_found" : "server_error";
-  }
+  const ongoingList = home.ongoing?.animeList || [];
+  const completedList = home.completed?.animeList || [];
 
-  if (errorType) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
-        <p className="text-white text-center">
-          {errorType === "not_found"
-            ? "Data tidak ditemukan 😕"
-            : "Terjadi kesalahan di server, coba lagi nanti 🙏"}
-        </p>
-      </div>
-    );
-  }
-
-  const animeList = result?.data?.animeList || [];
-
-  const heroSlugs = pickRandom(animeList, 5).map((a) => a.animeId);
+  // Fetch 5 detail anime untuk hero (parallel)
+  const heroSlugs = pickRandom(ongoingList, 5).map((a) => a.animeId);
   const heroDetails = await Promise.all(
     heroSlugs.map((slug) => getAnimeDetail(slug))
   );
@@ -64,16 +50,31 @@ const Home = async ({ searchParams }) => {
 
   return (
     <div className="bg-black text-white min-h-screen">
+
+      {/* HERO SLIDER */}
       <HeroSlider slides={slides} />
 
-      <section className="px-6 md:px-12 py-10">
-        <h2 className="text-lg font-semibold mb-4">Episode Terbaru</h2>
-        {animeList.length === 0 ? (
-          <p className="text-gray-400">Belum ada anime tersedia.</p>
-        ) : (
-          <AnimeList animeList={animeList} variant="horizontal" />
-        )}
-      </section>
+      {/* SECTIONS */}
+      <div className="pt-10">
+
+        {/* TAYANG HARI INI */}
+        <TodaySchedule schedule={scheduleData} />
+
+        {/* EPISODE TERBARU */}
+        <AnimeRow
+          title="🔴 Episode Terbaru"
+          animeList={ongoingList}
+          viewAllHref="/ongoing"
+        />
+
+        {/* ANIME TAMAT */}
+        <AnimeRow
+          title="✅ Baru Tamat"
+          animeList={completedList}
+          viewAllHref="/completed"
+        />
+
+      </div>
     </div>
   );
 };
