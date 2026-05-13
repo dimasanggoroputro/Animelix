@@ -43,7 +43,7 @@ const Home = async () => {
 
   // Fetch 5 detail anime untuk hero (parallel)
   // app/page.js
-  const heroSlugs = pickRandom(ongoingList, 2).map((a) => a.animeId);
+  const heroSlugs = pickRandom(ongoingList, 5).map((a) => a.animeId);
   const heroDetails = await Promise.all(
     heroSlugs.map((slug) => getAnimeDetail(slug)),
   );
@@ -61,14 +61,24 @@ const Home = async () => {
 
         {/* EPISODE TERBARU */}
         <AnimeRow
-          title="🔴 Episode Terbaru"
+          title={
+            <div className="flex items-center gap-2">
+              <Flame size={18} className="text-red-500" />
+              <span>Episode Terbaru</span>
+            </div>
+          }
           animeList={ongoingList}
           viewAllHref="/ongoing"
         />
 
         {/* ANIME TAMAT */}
         <AnimeRow
-          title="✅ Baru Tamat"
+          title={
+            <div className="flex items-center gap-2">
+              <BadgeCheck size={18} className="text-green-500" />
+              <span>Baru Tamat</span>
+            </div>
+          }
           animeList={completedList}
           viewAllHref="/completed"
         />
