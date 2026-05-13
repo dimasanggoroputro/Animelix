@@ -7,6 +7,7 @@ import AnimeRow from "@/components/AnimeRow";
 import TodaySchedule from "@/components/TodaySchedule";
 import { getHome } from "@/lib/getHome";
 import { getSchedule } from "@/lib/getSchedule";
+import { Flame, BadgeCheck } from "lucide-react";
 
 export const metadata = {
   title: "Anime Sub Indo — Terbaru & Terlengkap",
