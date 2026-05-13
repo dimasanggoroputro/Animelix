@@ -42,21 +42,20 @@ const Home = async () => {
   const completedList = home.completed?.animeList || [];
 
   // Fetch 5 detail anime untuk hero (parallel)
-  const heroSlugs = pickRandom(ongoingList, 5).map((a) => a.animeId);
+  // app/page.js
+  const heroSlugs = pickRandom(ongoingList, 2).map((a) => a.animeId);
   const heroDetails = await Promise.all(
-    heroSlugs.map((slug) => getAnimeDetail(slug))
+    heroSlugs.map((slug) => getAnimeDetail(slug)),
   );
   const slides = heroDetails.filter(Boolean);
 
   return (
     <div className="bg-black text-white min-h-screen">
-
       {/* HERO SLIDER */}
       <HeroSlider slides={slides} />
 
       {/* SECTIONS */}
       <div className="pt-10">
-
         {/* TAYANG HARI INI */}
         <TodaySchedule schedule={scheduleData} />
 
@@ -73,7 +72,6 @@ const Home = async () => {
           animeList={completedList}
           viewAllHref="/completed"
         />
-
       </div>
     </div>
   );
