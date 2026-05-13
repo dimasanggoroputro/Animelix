@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Play } from "lucide-react";
 
 const DAYS_ORDER = [
   "Senin",
@@ -96,33 +96,28 @@ const ScheduleClient = ({ schedule }) => {
         {animeList.length === 0 ? (
           <p className="text-gray-500">Tidak ada anime untuk hari ini.</p>
         ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4">
             {animeList.map((anime, i) => (
               <Link
                 key={i}
                 href={`/anime/${anime.slug}`}
-                className="group/card flex flex-col gap-2"
+                className="group flex flex-col gap-1.5"
               >
-                {/* POSTER */}
-                <div className="relative overflow-hidden rounded-md shadow-lg">
+                <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-800">
                   <img
-                    src={anime.poster || anime.thumbnail}
+                    src={anime.poster}
                     alt={anime.title}
-                    className="w-full h-[240px] object-cover transition-transform duration-300 group-hover/card:scale-102"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    loading="lazy"
                   />
-
-                  <div className="absolute inset-0 bg-black/0 group-hover/card:bg-black/60 group-hover/card:backdrop-blur-[2px] transition" />
-
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/card:opacity-100 transition">
-                    <div className="flex items-center justify-center gap-2 bg-white/20 backdrop-blur-md px-3 py-2 rounded-full text-white text-sm">
-                      <Search size={16} />
-                      Detail
+                  {/* Hover overlay */}
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                    <div className="bg-white/20 backdrop-blur rounded-full p-3">
+                      <Play size={20} fill="white" className="text-white" />
                     </div>
                   </div>
                 </div>
-
-                {/* TITLE */}
-                <p className="text-xs text-gray-300 leading-tight line-clamp-2 group-hover:text-white transition-colors">
+                <p className="text-xs text-gray-400 line-clamp-2 group-hover:text-white transition-colors leading-tight">
                   {anime.title}
                 </p>
               </Link>

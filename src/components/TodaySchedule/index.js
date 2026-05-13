@@ -43,7 +43,7 @@ const TodaySchedule = ({ schedule = [] }) => {
       </div>
 
       {/* GRID */}
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gap-4">
         {animeList.map((anime, i) => (
           <Link
             key={i}
@@ -57,8 +57,11 @@ const TodaySchedule = ({ schedule = [] }) => {
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <Play size={18} fill="white" className="text-white" />
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                <div className="bg-white/20 backdrop-blur rounded-full p-3">
+                  <Play size={20} fill="white" className="text-white" />
+                </div>
               </div>
             </div>
             <p className="text-xs text-gray-400 line-clamp-2 group-hover:text-white transition-colors leading-tight">

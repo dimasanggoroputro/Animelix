@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Play, Star } from "lucide-react";
 
 const SearchResultList = ({ animeList = [] }) => {
   function limitText(text, max) {
@@ -12,37 +12,55 @@ const SearchResultList = ({ animeList = [] }) => {
         <Link
           key={index}
           href={`/anime/${anime.animeId || anime.slug}`}
-          className="group/card flex flex-col gap-2"
+          className="group flex flex-col gap-2"
         >
           {/* POSTER */}
-          <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-zinc-800">
+          <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-800">
             <img
               src={anime.poster || anime.thumbnail}
               alt={anime.title}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover/card:scale-105"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               loading="lazy"
             />
 
-            {/* SCORE */}
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+            {/* Score badge */}
             {anime.score && (
-              <div className="absolute top-2 left-2 bg-black/70 text-yellow-400 text-xs font-bold px-2 py-0.5 rounded">
-                ★ {anime.score}
+              <div className="absolute top-2 left-2 flex items-center gap-1 bg-black/70 text-yellow-400 text-xs font-bold px-2 py-0.5 rounded">
+                <Star size={10} fill="currentColor" />
+                {anime.score}
               </div>
             )}
 
-            {/* OVERLAY HOVER (FIXED) */}
-            <div className="absolute inset-0 bg-black/0 group-hover/card:bg-black/60 transition-all duration-300 flex flex-col items-center justify-center gap-2 opacity-0 group-hover/card:opacity-100">
-              <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-3 py-2 rounded-full text-white text-xs">
-                <Search size={14} />
-                Detail
+            {/* Episode badge */}
+            {anime.episodes && (
+              <div className="absolute top-2 right-2 bg-black/70 text-gray-300 text-xs px-2 py-0.5 rounded">
+                {anime.episodes} Eps
               </div>
+            )}
 
-              {anime.episodes && (
-                <span className="text-gray-300 text-xs">
-                  {anime.episodes} eps
-                </span>
-              )}
+            {/* Hover overlay */}
+            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+              <div className="bg-white/20 backdrop-blur rounded-full p-3">
+                <Play size={20} fill="white" className="text-white" />
+              </div>
             </div>
+
+            {/* Release day */}
+            {anime.releaseDay && (
+              <div className="absolute bottom-2 left-2 bg-red-600/90 text-white text-xs px-2 py-0.5 rounded font-semibold">
+                {anime.releaseDay}
+              </div>
+            )}
+
+            {/* Completed badge */}
+            {anime.lastReleaseDate && (
+              <div className="absolute bottom-2 left-2 bg-green-700/90 text-white text-xs px-2 py-0.5 rounded font-semibold">
+                Tamat {anime.lastReleaseDate}
+              </div>
+            )}
           </div>
 
           {/* INFO */}
@@ -51,11 +69,15 @@ const SearchResultList = ({ animeList = [] }) => {
               {limitText(anime.title, 40)}
             </p>
 
-            <p className="text-xs text-gray-500 mt-0.5">
-              {anime.episodes
-                ? `${anime.episodes} eps`
-                : anime.status || "No info"}
-            </p>
+            {anime.latestReleaseDate ? (
+              <p className="text-xs text-gray-500 mt-0.5">
+                {anime.latestReleaseDate}
+              </p>
+            ) : (
+              <p className="text-xs text-gray-500 mt-0.5">
+                {anime.status || "No info"}
+              </p>
+            )}
           </div>
         </Link>
       ))}

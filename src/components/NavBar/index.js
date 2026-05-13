@@ -9,7 +9,7 @@ const NavBar = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="bg-black/90 backdrop-blur-md text-white shadow-lg fixed top-0 left-0 w-full z-50 border-b border-white/5">
+    <nav className="bg-black/90 text-white shadow-lg fixed top-0 left-0 w-full z-50 border-b border-white/5">
       <div className="px-6 md:px-12 h-16 flex items-center justify-between">
         {/* LEFT */}
         <div className="flex items-center gap-8">
