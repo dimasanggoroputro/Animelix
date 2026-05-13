@@ -1,5 +1,6 @@
 "use client";
 
+import CommentSection from "@/components/CommentSection";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
@@ -16,13 +17,21 @@ import {
   Tag,
 } from "lucide-react";
 
+// Server yang relatif bersih tanpa iklan agresif
+const CLEAN_SERVERS = [
+  "otakuwatch5",
+  "otakuwatch5hd",
+  "odstream",
+  "odstreamhd",
+];
+
 const EpisodeClient = ({ initialData }) => {
   const [data] = useState(initialData);
   const [streamUrl, setStreamUrl] = useState(null);
   const [activeServerId, setActiveServerId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState("server"); // "server" | "download" | "episodes"
+  const [activeTab, setActiveTab] = useState("server");
 
   useEffect(() => {
     if (data?.defaultStreamingUrl) {
@@ -109,14 +118,14 @@ const EpisodeClient = ({ initialData }) => {
                 href={`/genre/${g.genreId}`}
                 className="flex items-center gap-1 text-xs text-gray-400 bg-gray-800 hover:bg-gray-700 px-2 py-0.5 rounded-full transition-colors"
               >
-                {g.title}
+                <Tag size={10} /> {g.title}
               </Link>
             ))}
           </div>
         )}
       </div>
 
-      {/* LAYOUT: PLAYER KIRI + EPISODE LIST KANAN */}
+      {/* LAYOUT */}
       <div className="px-4 md:px-12 flex flex-col lg:flex-row gap-4">
         {/* PLAYER */}
         <div className="flex-1 min-w-0">
@@ -183,7 +192,7 @@ const EpisodeClient = ({ initialData }) => {
             )}
           </div>
 
-          {/* TABS: SERVER / DOWNLOAD */}
+          {/* TABS */}
           <div className="mt-5">
             <div className="flex gap-1 border-b border-gray-800 mb-4">
               {[
@@ -224,18 +233,25 @@ const EpisodeClient = ({ initialData }) => {
                     <div className="flex gap-2 flex-wrap">
                       {q.serverList.map((s, idx) => {
                         const isActive = activeServerId === s.serverId;
+                        const serverName = s.title.trim();
+                        const isClean = CLEAN_SERVERS.includes(
+                          serverName.toLowerCase(),
+                        );
                         return (
                           <button
                             key={idx}
                             onClick={() => changeServer(s.serverId)}
                             disabled={loading}
-                            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all disabled:opacity-50 ${
+                            className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all disabled:opacity-50 ${
                               isActive
                                 ? "bg-red-600 text-white"
                                 : "bg-gray-800 hover:bg-gray-700 text-gray-300"
                             }`}
                           >
-                            {s.title.trim()}
+                            {serverName}
+                            {isClean && (
+                              <span className="text-green-400 text-xs">✓</span>
+                            )}
                           </button>
                         );
                       })}
@@ -274,8 +290,7 @@ const EpisodeClient = ({ initialData }) => {
                           rel="noopener noreferrer"
                           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm bg-gray-800 hover:bg-blue-700 text-gray-300 hover:text-white transition-all"
                         >
-                          <ExternalLink size={12} />
-                          {u.title}
+                          <ExternalLink size={12} /> {u.title}
                         </a>
                       ))}
                     </div>
@@ -320,6 +335,8 @@ const EpisodeClient = ({ initialData }) => {
         )}
       </div>
 
+      {/* Comment Section */}
+      <CommentSection episodeId={data.animeId} />
       <div className="pb-16" />
     </div>
   );
