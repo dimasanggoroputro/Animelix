@@ -4,7 +4,6 @@ import Link from "next/link";
 import Search from "@/components/Search";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
 
 const NavBar = () => {
   const [open, setOpen] = useState(false);

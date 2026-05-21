@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useUser, SignInButton } from "@clerk/nextjs";
 import { MessageSquare, Send, Trash2, Loader2, LogIn } from "lucide-react";
 
 const formatDate = (dateStr) => {
